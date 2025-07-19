@@ -1,0 +1,7 @@
+---
+
+- name: Install updates
+  hosts: all
+
+  roles:
+    - com.filipstack.updates

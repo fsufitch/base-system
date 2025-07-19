@@ -1,0 +1,50 @@
+---
+
+- name: Windows package updates
+  when: ansible_os_family == "Windows"
+  become: true
+  block:
+    - name: Install Winget updates
+      ansible.windows.win_command: winget upgrade --all
+    - name: Install Windows updates
+      ansible.windows.win_updates:
+        category_names:
+          - "Security Updates"
+          - "Critical Updates"
+
+- name: Linux package updates
+  when: ansible_os_family == "Linux"
+  block:
+    - name: Update system packages
+      become: true
+      ansible.builtin.package:
+        name: "*"
+        state: latest  # noqa package-latest
+
+    - name: Update root flatpaks
+      become: true
+      community.general.flatpak:
+        name: "*"
+        state: latest
+
+    - name: Update user flatpaks
+      community.general.flatpak:
+        name: "*"
+        state: latest
+
+- name: Update system packages 2
+  become: true
+  ansible.builtin.package:
+    name: "*"
+    state: latest  # noqa package-latest
+
+- name: Update root flatpaks 2
+  become: true
+  community.general.flatpak:
+    name: "*"
+    state: latest
+
+- name: Update user flatpaks 2
+  community.general.flatpak:
+    name: "*"
+    state: latest

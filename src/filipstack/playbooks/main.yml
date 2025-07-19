@@ -1,0 +1,7 @@
+---
+
+- name: Install base system packages
+  hosts: all
+
+  roles:
+    - com.filipstack.ffmpeg

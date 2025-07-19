@@ -3,6 +3,7 @@ import shlex
 import socket
 import subprocess
 from dataclasses import dataclass
+from typing import Literal
 
 # import ansible_runner
 import click
@@ -75,68 +76,6 @@ def main(ctx: click.Context, verbose: int, quiet: bool, path: str | None):
     init_logging(config)
 
 
-@main.command(
-    name="ansible",
-    context_settings={"ignore_unknown_options": True, "allow_extra_args": True},
-)
-@click.argument(
-    "cmd",
-    type=click.Choice(
-        [
-            "community",
-            "config",
-            "console",
-            "doc",
-            "galaxy",
-            "inventory",
-            "playbook",
-            "pull",
-            "runner",
-            "test",
-            "vault",
-        ]
-    ),
-)
-@click.option("--no-defaults", is_flag=True, help="Disable default arguments.")
-@click.pass_context
-def ansible_passthrough(
-    ctx: click.Context,
-    cmd: str,
-    no_defaults: bool,
-):
-    config = Config.of(ctx)
-
-    ansible_cmd = f"ansible-{cmd}"
-    LOG.info(f"Using ansible command: {ansible_cmd}")
-
-    ansible_args = []
-    if not no_defaults:
-        if config.ansible_verbosity:
-            ansible_args.append(f"-{'v' * (config.ansible_verbosity)}")
-        if cmd in ["console", "doc", "inventory", "playbook", "pull"]:
-            ansible_args.append("--inventory")
-            ansible_args.append(str(config.paths.inventory))
-    ansible_args.extend(ctx.args)
-    LOG.info("Using ansible arguments: %s", ansible_args)
-
-    subprocess.run(
-        [ansible_cmd] + ansible_args,
-        env={
-            "ANSIBLE_NOCOWS": "1",
-        },
-        check=True,
-        shell=True,
-    )
-
-    # _, err, code = ansible_runner.run_command(f"ansible-{cmd}", ansible_args)
-    # if code:
-    #     LOG.error("Ansible command failed with error: %s", err)
-    #     LOG.error("Ansible said: %s", err)
-    #     raise click.ClickException(
-    #         f"Ansible command '{ansible_cmd}' failed. See logs for details."
-    #     )
-
-
 def _get_hostname():
     try:
         return socket.getfqdn()
@@ -149,6 +88,14 @@ def _get_hostname():
     name="run",
     help="Run an Ansible playbook against specified hosts. Defaults to local host if none specified.",
 )
+@click.option(
+    "-t",
+    "--type",
+    type=click.Choice(["main", "updates"]),
+    default="main",
+    help="Type of playbook to run.",
+    show_default=True,
+)
 @click.argument(
     "host_limit",
     type=str,
@@ -156,7 +103,9 @@ def _get_hostname():
     required=False,
 )
 @click.pass_context
-def ansible_remote(ctx: click.Context, host_limit: list[str]):
+def ansible_run(
+    ctx: click.Context, type: Literal["main", "updates"], host_limit: list[str]
+):
     if not host_limit:
         my_hostname = _get_hostname()
         LOG.warning(
@@ -169,13 +118,20 @@ def ansible_remote(ctx: click.Context, host_limit: list[str]):
 
     ansible_playbook = get_executable_path("ansible-playbook")
 
+    playbook = {
+        "main": config.paths.main_playbook,
+        "updates": config.paths.updates_playbook,
+    }.get(type)
+    if not playbook:
+        raise click.UsageError(f"Invalid playbook type: {type}")
+
     cmd = [
         ansible_playbook,
         "-i",
         str(config.paths.inventory),
         "--limit",
         ",".join(host_limit),
-        str(config.paths.main_playbook),
+        str(playbook),
     ]
 
     if config.ansible_verbosity:

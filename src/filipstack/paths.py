@@ -39,11 +39,23 @@ class AnsiblePaths:
             LOG.info("Initializing main playbook at: %s", self.main_playbook)
             self.main_playbook.write_text(
                 importlib.resources.files("filipstack")
-                .joinpath("main_playbook.yml")
+                .joinpath("playbooks", "main.yml")
                 .read_text()
             )
         else:
             raise FileExistsError(f"Main playbook {self.main_playbook} already exists.")
+
+        if not self.updates_playbook.exists() or force:
+            LOG.info("Initializing updates playbook at: %s", self.updates_playbook)
+            self.updates_playbook.write_text(
+                importlib.resources.files("filipstack")
+                .joinpath("playbooks", "updates.yml")
+                .read_text()
+            )
+        else:
+            raise FileExistsError(
+                f"Updates playbook {self.updates_playbook} already exists."
+            )
 
         if not self.inventory.exists() or force:
             LOG.info("Initializing inventory at: %s", self.inventory)
@@ -69,7 +81,11 @@ class AnsiblePaths:
 
     @property
     def main_playbook(self) -> Path:
-        return self.data_dir / "main_playbook.yml"
+        return self.data_dir / "playbook_main.yml"
+
+    @property
+    def updates_playbook(self) -> Path:
+        return self.data_dir / "playbook_updates.yml"
 
     @property
     def inventory(self) -> Path:

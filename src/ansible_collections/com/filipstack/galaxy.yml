@@ -14,7 +14,8 @@ license:
 
 tags: []
 
-dependencies: {}
+dependencies:
+  { ansible.windows: ">=3.0.0,<4", community.general: ">=11.1.0,<12" }
 
 repository: https://github.com/fsufitch/filipstack
 
