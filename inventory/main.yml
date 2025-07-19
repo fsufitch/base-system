@@ -1,0 +1,12 @@
+linux:
+  hosts:
+    luna:
+
+windows:
+  hosts:
+    phobos
+
+fsufitch-user:
+  hosts:
+    luna:
+    phobos:

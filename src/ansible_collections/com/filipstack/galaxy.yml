@@ -1,0 +1,25 @@
+namespace: com
+name: filipstack
+version: 1.0.0
+readme: README.md
+
+authors:
+  - Filip Sufitchi (github.com/fsufitch)
+
+description: A collection of tools for setting up my personal systems
+
+license:
+  - GPL-3.0-or-later
+#license_file: ""
+
+tags: []
+
+dependencies: {}
+
+repository: https://github.com/fsufitch/filipstack
+
+#documentation: http://docs.example.com
+#homepage: http://example.com
+#issues: http://example.com/issue/tracker
+
+build_ignore: []

@@ -1,0 +1,20 @@
+linux:
+  hosts:
+    luna:
+      ansible_python_interpreter: /usr/bin/python3
+
+windows:
+  hosts:
+    phobos:
+      ansible_user: "fsufi"
+      ansible_python_interpreter: "/c/windows/py"
+      ansible_ssh_extra_args: |-
+        -T
+      ansible_scp_extra_args: |-
+        -T
+      ansible_shell_type: powershell
+
+user_fsufitch:
+  hosts:
+    luna:
+    phobos:
