@@ -1,0 +1,11 @@
+flatpak
+podman
+vim
+{% if ansible_os_family == "RedHat" %}
+openssh-server
+openssh-clients
+{% elif ansible_os_family == "Debian" %}
+openssh-server
+openssh-sftp-server
+openssh-client
+{% endif %}

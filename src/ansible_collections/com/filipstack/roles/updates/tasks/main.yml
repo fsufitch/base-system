@@ -12,14 +12,23 @@
           - "Security Updates"
           - "Critical Updates"
 
-- name: Linux package updates
+- name: Linux system-wide updates
   when: ansible_os_family == "Linux"
+  become: true
   block:
     - name: Update system packages
+      when: ansible_os_family == "RedHat"
+      ansible.builtin.command:
+        cmd: dnf update -y
+      register: result
+      changed_when: |-
+        'Nothing to do' not in result.stdout
+    
+    - name: List root flatpaks
       become: true
-      ansible.builtin.package:
+      community.general.flatpak:
         name: "*"
-        state: latest  # noqa package-latest
+        state: latest
 
     - name: Update root flatpaks
       become: true
@@ -31,20 +40,3 @@
       community.general.flatpak:
         name: "*"
         state: latest
-
-- name: Update system packages 2
-  become: true
-  ansible.builtin.package:
-    name: "*"
-    state: latest  # noqa package-latest
-
-- name: Update root flatpaks 2
-  become: true
-  community.general.flatpak:
-    name: "*"
-    state: latest
-
-- name: Update user flatpaks 2
-  community.general.flatpak:
-    name: "*"
-    state: latest

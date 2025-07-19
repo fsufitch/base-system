@@ -1,0 +1,19 @@
+---
+- name: Install python3-dnf for RedHat systems
+  when: ansible_os_family == "RedHat"
+  become: true
+  ansible.builtin.package:
+    name: python3-libdnf5
+    state: present
+
+- name: Pick platform-specific packages
+  ansible.builtin.set_fact:
+    platform_packages: "{{ lookup('ansible.builtin.template', 'packages.txt.j2') | split }}"
+
+- name: Install base packages
+  become: true
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ platform_packages }}"
+  when: item is defined and item != ""

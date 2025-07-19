@@ -1,0 +1,10 @@
+---
+
+- name: Install python3-dnf
+  when: ansible_os_family == "RedHat"
+  become: true
+  ansible.builtin.command:
+    cmd: dnf install -y python3-libdnf5
+  register: result
+  changed_when: |-
+    'Nothing to do' not in result.stdout

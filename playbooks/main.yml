@@ -4,4 +4,4 @@
   hosts: all
 
   roles:
-    - com.filipstack.ffmpeg
+    - com.filipstack.linux_base

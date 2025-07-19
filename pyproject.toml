@@ -14,18 +14,13 @@ license.file = "LICENSE"
 
 dynamic = ["version"]
 
-[project.scripts]
-filipstack = "filipstack.__main__:main"
-
-[tool.setuptools.dynamic]
-version = { attr = "filipstack.__version__" }
-
-[tool.setuptools.package-data]
-ansible_collections = ["*"]
-filipstack = ["*"]
-
 [tool.flake8]
-max-line-length = 100
+extend-ignore = [
+    "E501", # Line too long
+]
+
+[tool.setuptools]
+include-package-data = true
 
 [build-system]
 requires = ["setuptools>=68.0.0", "wheel"]
