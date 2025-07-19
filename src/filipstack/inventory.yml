@@ -4,15 +4,13 @@ linux:
       ansible_python_interpreter: /usr/bin/python3
 
 windows:
+  vars:
+    ansible_pkg_mgr: winget
+    ansible_shell_type: powershell
   hosts:
     phobos:
       ansible_user: "fsufi"
       ansible_python_interpreter: "/c/windows/py"
-      ansible_ssh_extra_args: |-
-        -T
-      ansible_scp_extra_args: |-
-        -T
-      ansible_shell_type: powershell
 
 user_fsufitch:
   hosts:

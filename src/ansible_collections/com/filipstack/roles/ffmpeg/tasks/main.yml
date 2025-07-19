@@ -1,0 +1,11 @@
+---
+
+- name: Install FFmpeg (Windows)
+  ansible.windows.win_command: winget install ffmpeg
+  when: ansible_os_family == "Windows"
+
+- name: Install FFmpeg (Linux)
+  ansible.builtin.package:
+    name: ffmpeg
+    state: present
+  when: ansible_os_family == "Linux"
